@@ -8,7 +8,10 @@ gulp 源码
     gulpfile文件名不能随意命名
 - gulp命令 直接会找gulpfile.js 文件
 - gulp --gulpfile 自定义.js 文件名
-
-```
+## gulp核心API
+- gulp.src()
+  方法用来获取流的
+- gulp.dest()
+  方法用来向硬盘写入文件
 
 
