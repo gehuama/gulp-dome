@@ -1,6 +1,5 @@
-# gulp-code
-gulp 源码  
-
+# gulp-dome
+gulp 搭建环境
 ## 安装模块
 - gulp webpack
 - gulp-cli webpack-cli
