@@ -1,10 +1,1 @@
-"use strict";
-
-var sum = function sum(a, b) {
-  return a + b;
-};
-
-console.log(sum(1, 2));
-$(function () {
-  console.log("JQuery");
-});
+"use strict";var sum=function(o,n){return o+n};console.log(sum(1,2)),$(function(){console.log("JQuery")});

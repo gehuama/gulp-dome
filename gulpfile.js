@@ -1,21 +1,26 @@
-const { src, dest, parallel, watch, series } = require("gulp");
+const { src, dest, parallel, watch, series, tree } = require("gulp");
 const less = require("gulp-less");
 const gulpClean = require("gulp-clean");
 const babel = require("gulp-babel");
 const ejs = require("gulp-ejs");
+const useref = require("gulp-useref");
+const htmlmin = require("gulp-htmlmin");
+const uglify = require("gulp-uglify");
+const cleanCss = require("gulp-clean-css");
+const gulpIf = require("gulp-if");
 const browserSync = require("browser-sync")
 /** 创建一个服务 */
 const browserServer = browserSync.create();
 /** 清除目录 */
 const clean = () => {
-    return src("dist/**", { read: "false" })
+    return src(["dist/**", "temp/**"], { read: false })
         .pipe(gulpClean())
 }
 // 编辑样式
 const styles = () => {
     return src("src/styles/**/*.less", { base: "src" })
         .pipe(less())
-        .pipe(dest("dist"))
+        .pipe(dest("temp"))
 }
 
 /** 编辑JS脚本 */
@@ -24,14 +29,14 @@ const scripts = () => {
         .pipe(babel({
             presets: ["@babel/preset-env"]
         }))
-        .pipe(dest("dist"))
+        .pipe(dest("temp"))
 }
 
 /** 编译html模版 */
 const html = () => {
     return src("src/**/*.html", { base: "src" })
         .pipe(ejs({ title: "gulp" }, { cache: false }))
-        .pipe(dest("dist"))
+        .pipe(dest("temp"))
 }
 
 /** 压缩图片 */
@@ -59,7 +64,7 @@ const serve = () => {
     return browserServer.init({
         notify: false,
         server: {
-            baseDir: ["dist", "src", "static"], // 静态文件根目录
+            baseDir: ["temp", "src", "static"], // 静态文件根目录
             files: ["dist/**"], // 监听 文件变化 文件变化后重新刷新浏览器
             routes: {
                 "/node_modules": "node_modules"
@@ -67,10 +72,24 @@ const serve = () => {
         }
     })
 }
-
+/** */
+const concat = () => {
+    // src index.html
+    // 经过useref处理之后变成 里面有三个文件了 index.html build.css build.js
+    return src("temp/**/*.html", { base: "temp" })
+        .pipe(useref({ searchPath: ["temp", "."] }))
+        .pipe(gulpIf("*.js", uglify()))
+        .pipe(gulpIf("*.css", cleanCss()))
+        .pipe(gulpIf("*.html", htmlmin({
+            collapseWhitespace: true,
+            minifyCSS: true,
+            minifyJS: true
+        })))
+        .pipe(dest("dist"))
+}
 /** 把需要编译的任务组合在一起，成为一个并发执行的组合任务 */
 const compile = parallel(styles, scripts, html);
-const build = series(clean, parallel(compile, images, static))
+const build = series(clean, parallel(series(compile, concat), images, static))
 const dev = series(clean, compile, serve)
 // 生产环境构建
 exports.build = build;
