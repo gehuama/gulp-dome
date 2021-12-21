@@ -14,4 +14,8 @@ gulp 源码
 - gulp.dest()
   方法用来向硬盘写入文件
 
+## 安装插件
+-  npm install @babel/core @babel/preset-env browser-sync gulp gulp-babel gulp-clean gulp-clean-css gulp-ejs gulp-htmlmin gulp-if gulp-imagemin gulp-less gulp-load-plugins gulp-uglify gulp-useref gulp-watch map-stream
+bootstrap jquery --save
+
 
