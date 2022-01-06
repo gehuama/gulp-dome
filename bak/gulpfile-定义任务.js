@@ -1,5 +1,6 @@
 const fs = require("fs");
 const { parallel, series } = require("gulp");
+// 转化流 through
 const through = require("through2");
 /** 异步任务回调 */
 function callbackTask(done) {
@@ -33,6 +34,7 @@ function streamTask() {
     // 流的操作其实也是异步的，这个任务也需要等待流这个异步任务之后才会让任务结束
     let rs = fs.createReadStream("input.txt", { autoClose: true });
     let ws = fs.createWriteStream("output.txt", { autoClose: true });
+    // 转化流，将chuck拿到的流 转化  enc 代表流的类型
     return rs.pipe(through((chunk, enc, next) => {
         setTimeout(() => {
             next(null, chunk.toString() + "$");

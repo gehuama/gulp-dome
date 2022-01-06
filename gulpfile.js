@@ -1,4 +1,4 @@
-const { src, dest, parallel, watch, series, tree } = require("gulp");
+const { src, dest, parallel, watch, series } = require("gulp");
 const less = require("gulp-less");
 const gulpClean = require("gulp-clean");
 const babel = require("gulp-babel");
@@ -55,10 +55,10 @@ const static = () => {
 }
 /** 服务 */
 const serve = () => {
-    watch("src/styles/**/*.less", styles);
-    watch("src/scripts/**/*.js", scripts);
-    watch("src/**/*.html", html);
-    watch(["src/assets/images/**/*.@(jpg|png|gif|svg)", "static/**"], browserServer.reload)
+    watch("src/styles/**/*.less", styles).on("change", browserServer.reload);
+    watch("src/scripts/**/*.js", scripts).on("change", browserServer.reload);
+    watch("src/**/*.html", html).on("change", browserServer.reload);
+    watch(["src/assets/images/**/*.@(jpg|png|gif|svg)", "static/**"]).on("change", browserServer.reload);
     // serve和webpack-dev-server 里的打包不一样， serve不会在内存和硬盘上生成任何文件
     // webpack-dev-server 也只读内存中的文件，webpack打包生成到内存里
     return browserServer.init({
